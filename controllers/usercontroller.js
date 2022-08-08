@@ -2,38 +2,30 @@ const User=require('../models/user');
 
 
 module.exports.profile=function(req,res){
-if(req.cookies.user_id){
-  User.findById(req.cookies.user_id,function(err,user){
-    if(user){
-    
-      return  res.render('user_profile',{
-        title:"user profile",
-        user: user
-      })
-    }
-    else{
-      return res.redirect('/user/sign-in');
-    }
 
-  });
-}
-else{
-  return res.redirect('/user/sign-in');
-}
-
-
-
+return res.render('user_profile');
 
 
 }   
 
 module.exports.signin=function(req,res){
+  if(req.isAuthenticated()){
+   return res.redirect('/user/profile');
+  }
+  
     return res.render('user_signin',{
      title: "sign In"
-    });
+    }
+  );
+  
 }
 
 module.exports.signup=function(req,res){
+  if(req.isAuthenticated()){
+    return res.redirect('/user/profile');
+  }
+  
+
     return res.render('user_signup',{
      title: "sign Up"
     });
@@ -61,23 +53,14 @@ User.findOne({email:req.body.email},function(err,user){
 }
 
 module.exports.createsession=function(req,res){
-
-    User.findOne({email:req.body.email},function(err,user){
-        
-        if(user){
-            if(user.password !=req.body.password){
-                return res.redirect('back');
-            }
-            res.cookie("user_id",user.id);
-            return res.redirect('/user/profile');
-        }
-      else{
-        return res.redirect('back');
-      }
-
-
-
-    });
+return res.redirect('/');
 }
 
 
+module.exports.destroysession=function(req,res){
+    req.logout(()=>{
+      console.log('logged out');
+    });
+
+    return res.redirect('/');
+}
