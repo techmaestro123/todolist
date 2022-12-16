@@ -1,5 +1,24 @@
-module.exports.home=function(req,res){
-    
+const Post = require('../models/post');
 
-    return res.render('home');
-};
+module.exports.home = async function(req, res){
+   
+
+    
+    let posts = await Post.find({})
+            .sort('-createdAt')
+            .populate('user')
+            .populate({
+                path: 'comments',
+                populate: {
+                    path: 'user'
+                }
+               
+            })
+            
+            return res.render('home', {
+                title: "My Home Page",
+                posts: posts 
+            })
+
+}
+
